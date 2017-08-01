@@ -1,0 +1,129 @@
+//
+//  DLUpdater.swift
+//  DLUpdater
+//
+//  Created by Daniel Lin on 08/12/2016.
+//  Copyright © 2016 Daniel Lin. All rights reserved.
+//
+
+import UIKit
+import Siren
+
+public enum CheckUpdateType: Int {
+    /// Check application update immediately.
+    case immediately = 0
+    
+    /// Check application update once a day.
+    case daily = 1
+    
+    /// Check application update once a week.
+    case weekly = 7
+}
+
+public class DLUpdater: NSObject {
+    
+    public typealias DetectNewVersionBlock = (Bool, NSError?) -> Void
+
+    public static let shared = DLUpdater()
+    
+    private let siren = Siren.shared
+    private var didActiveApplicationObserved = false
+    var shouldForcelyCheckUpdate = false
+    var detectNewVersionBlock: DetectNewVersionBlock?
+    
+    private override init() {
+        super.init()
+        
+        #if DEBUG
+            siren.debugEnabled = true
+        #endif
+        
+        siren.majorUpdateAlertType = .force
+        siren.minorUpdateAlertType = .option
+        siren.patchUpdateAlertType = .skip
+        siren.revisionUpdateAlertType = .none
+        
+        siren.delegate = DLUpdaterDelegate()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+    }
+    
+    public func checkUpdate(type: CheckUpdateType, block: DetectNewVersionBlock? = nil) {
+        detectNewVersionBlock = block
+        
+        switch type {
+        case .immediately:
+            siren.checkVersion(checkType: .immediately)
+        case .daily:
+            siren.checkVersion(checkType: .daily)
+        case .weekly:
+            siren.checkVersion(checkType: .weekly)
+        }
+    }
+    
+    public func autoCheckUpdate(block: DetectNewVersionBlock? = nil) {
+        checkUpdate(type: .daily, block: block)
+        
+        if !didActiveApplicationObserved {
+            didActiveApplicationObserved = true
+            NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateWeekly) , name:NSNotification.Name.UIApplicationDidBecomeActive , object: nil)
+        }
+    }
+    
+    public func enableForcelyCheckUpdate() {
+        shouldForcelyCheckUpdate = true
+    }
+    
+    @objc private func checkUpdateWeekly() {
+        siren.checkVersion(checkType: .weekly)
+    }
+}
+
+class DLUpdaterDelegate: SirenDelegate {
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+    }
+    
+    @objc private func checkUpdateImmediately() {
+        Siren.shared.checkVersion(checkType: .immediately)
+    }
+    
+    func sirenDidShowUpdateDialog(alertType: Siren.AlertType) {
+        DLUpdater.shared.detectNewVersionBlock?(true, nil)
+        
+        if DLUpdater.shared.shouldForcelyCheckUpdate {
+            if alertType == .force {
+                NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateImmediately) , name:NSNotification.Name.UIApplicationWillEnterForeground , object: nil)
+            } else {
+                NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+            }
+        }
+    }
+    
+    func sirenUserDidLaunchAppStore() {
+        
+    }
+    
+    func sirenUserDidSkipVersion() {
+        
+    }
+    
+    func sirenUserDidCancel() {
+        
+    }
+    
+    func sirenDidFailVersionCheck(error: NSError) {
+        DLUpdater.shared.detectNewVersionBlock?(false, error)
+    }
+    
+    func sirenDidDetectNewVersionWithoutAlert(message: String) {
+        DLUpdater.shared.detectNewVersionBlock?(true, nil)
+    }
+    
+    func sirenLatestVersionInstalled() {
+        DLUpdater.shared.detectNewVersionBlock?(false, nil)
+    }
+}
