@@ -8,10 +8,10 @@
 
 Pod::Spec.new do |s|
   s.name             = 'DLUpdater'
-  s.version          = '0.1.0'
+  s.version          = '0.1.1'
   s.summary          = 'A framework for update notification of iOS application.'
   s.description      = <<-DESC
-                        A framework for update notification of iOS application.
+                        A framework for update notification of iOS application. It is based on 'Siren'.
                        DESC
 
   s.homepage         = 'https://github.com/dklinzh/DLUpdater'

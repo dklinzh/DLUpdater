@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
 //        DLUpdater.shared.enableForcelyCheckUpdate()
-        DLUpdater.shared.autoCheckUpdate()
+        DLUpdater.shared.autoCheckUpdate(type: .daily)
         
         return true
     }

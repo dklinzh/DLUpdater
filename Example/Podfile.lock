@@ -1,5 +1,5 @@
 PODS:
-  - DLUpdater (0.1.0):
+  - DLUpdater (0.1.1):
     - Siren (~> 2.0)
   - FBSnapshotTestCase (2.1.4):
     - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
@@ -28,7 +28,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  DLUpdater: 03fb93a3803c8f8466417997838fe24d369acd9a
+  DLUpdater: 3b9acdef89b1fde591466e2ce42fc1d762abf10a
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   Nimble: 415e3aa3267e7bc2c96b05fa814ddea7bb686a29
   Nimble-Snapshots: e743439f26c2fa99d8f7e0d7c01c99bcb40aa6f2

@@ -22,14 +22,15 @@ public enum CheckUpdateType: Int {
 
 public class DLUpdater: NSObject {
     
-    public typealias DetectNewVersionBlock = (Bool, NSError?) -> Void
+    public typealias DetectNewVersionBlock = (_ shouldUpdate: Bool, _ error: NSError?) -> Void
 
     public static let shared = DLUpdater()
     
     private let siren = Siren.shared
     private var didActiveApplicationObserved = false
-    var shouldForcelyCheckUpdate = false
-    var detectNewVersionBlock: DetectNewVersionBlock?
+    private var autoCheckType: CheckUpdateType = .weekly
+    fileprivate var shouldForcelyCheckUpdate = false
+    fileprivate var detectNewVersionBlock: DetectNewVersionBlock?
     
     private override init() {
         super.init()
@@ -50,7 +51,7 @@ public class DLUpdater: NSObject {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
     }
     
-    public func checkUpdate(type: CheckUpdateType, block: DetectNewVersionBlock? = nil) {
+    public func checkUpdate(type: CheckUpdateType = .immediately, block: DetectNewVersionBlock? = nil) {
         detectNewVersionBlock = block
         
         switch type {
@@ -63,12 +64,13 @@ public class DLUpdater: NSObject {
         }
     }
     
-    public func autoCheckUpdate(block: DetectNewVersionBlock? = nil) {
-        checkUpdate(type: .daily, block: block)
+    public func autoCheckUpdate(type: CheckUpdateType = .weekly, block: DetectNewVersionBlock? = nil) {
+        autoCheckType = type
+        checkUpdate(type: type, block: block)
         
         if !didActiveApplicationObserved {
             didActiveApplicationObserved = true
-            NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateWeekly) , name:NSNotification.Name.UIApplicationDidBecomeActive , object: nil)
+            NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateWhenDidBecomeActive) , name:NSNotification.Name.UIApplicationDidBecomeActive , object: nil)
         }
     }
     
@@ -76,8 +78,15 @@ public class DLUpdater: NSObject {
         shouldForcelyCheckUpdate = true
     }
     
-    @objc private func checkUpdateWeekly() {
-        siren.checkVersion(checkType: .weekly)
+    @objc private func checkUpdateWhenDidBecomeActive() {
+        switch autoCheckType {
+        case .immediately:
+            siren.checkVersion(checkType: .immediately)
+        case .daily:
+            siren.checkVersion(checkType: .daily)
+        case .weekly:
+            siren.checkVersion(checkType: .weekly)
+        }
     }
 }
 
