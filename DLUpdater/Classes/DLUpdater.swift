@@ -29,6 +29,7 @@ public class DLUpdater: NSObject {
     private let siren = Siren.shared
     private var didActiveApplicationObserved = false
     private var autoCheckType: CheckUpdateType = .weekly
+    private let delegate = DLUpdaterDelegate()
     fileprivate var shouldForcelyCheckUpdate = false
     fileprivate var detectNewVersionBlock: DetectNewVersionBlock?
     
@@ -44,7 +45,7 @@ public class DLUpdater: NSObject {
         siren.patchUpdateAlertType = .skip
         siren.revisionUpdateAlertType = .none
         
-        siren.delegate = DLUpdaterDelegate()
+        siren.delegate = delegate
     }
     
     deinit {

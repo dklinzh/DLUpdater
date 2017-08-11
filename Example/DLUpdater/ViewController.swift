@@ -17,6 +17,7 @@ class ViewController: UIViewController {
         
         DLUpdater.shared.checkUpdate(type: .immediately) { (shouldUpdate: Bool, error: NSError?) in
             // 
+            print(error?.description ?? "no error")
         }
     }
 
