@@ -22,14 +22,13 @@ public enum CheckUpdateType: Int {
 
 public class DLUpdater: NSObject {
     
-    public typealias DetectNewVersionBlock = (_ shouldUpdate: Bool, _ error: NSError?) -> Void
+    public typealias DetectNewVersionBlock = (_ shouldUpdate: Bool, _ error: Error?) -> Void
 
     public static let shared = DLUpdater()
     
     private let siren = Siren.shared
     private var didActiveApplicationObserved = false
     private var autoCheckType: CheckUpdateType = .weekly
-    private let delegate = DLUpdaterDelegate()
     fileprivate var shouldForcelyCheckUpdate = false
     fileprivate var detectNewVersionBlock: DetectNewVersionBlock?
     
@@ -45,11 +44,12 @@ public class DLUpdater: NSObject {
         siren.patchUpdateAlertType = .skip
         siren.revisionUpdateAlertType = .none
         
-        siren.delegate = delegate
+        siren.delegate = self
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
     }
     
     public func checkUpdate(type: CheckUpdateType = .immediately, block: DetectNewVersionBlock? = nil) {
@@ -89,19 +89,17 @@ public class DLUpdater: NSObject {
             siren.checkVersion(checkType: .weekly)
         }
     }
+    
 }
 
-class DLUpdaterDelegate: SirenDelegate {
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
-    }
+extension DLUpdater: SirenDelegate {
     
     @objc private func checkUpdateImmediately() {
         Siren.shared.checkVersion(checkType: .immediately)
     }
     
-    func sirenDidShowUpdateDialog(alertType: Siren.AlertType) {
+    // 弹出更新提示框
+    public func sirenDidShowUpdateDialog(alertType: Siren.AlertType) {
         DLUpdater.shared.detectNewVersionBlock?(true, nil)
         
         if DLUpdater.shared.shouldForcelyCheckUpdate {
@@ -113,27 +111,33 @@ class DLUpdaterDelegate: SirenDelegate {
         }
     }
     
-    func sirenUserDidLaunchAppStore() {
+    // 用户点击去 app store 更新
+    public func sirenUserDidLaunchAppStore() {
         
     }
     
-    func sirenUserDidSkipVersion() {
+    // 用户点击跳过此次更新
+    public func sirenUserDidSkipVersion() {
         
     }
     
-    func sirenUserDidCancel() {
+    // 用户点击取消更新
+    public func sirenUserDidCancel() {
         
     }
     
-    func sirenDidFailVersionCheck(error: NSError) {
+    // 检查更新失败(可能返回系统级别的错误)
+    public func sirenDidFailVersionCheck(error: Error) {
         DLUpdater.shared.detectNewVersionBlock?(false, error)
     }
     
-    func sirenDidDetectNewVersionWithoutAlert(message: String) {
+    // 检测到更新但不弹出提示框
+    public func sirenDidDetectNewVersionWithoutAlert(message: String, updateType: UpdateType) {
         DLUpdater.shared.detectNewVersionBlock?(true, nil)
     }
     
-    func sirenLatestVersionInstalled() {
+    // 已安装最新版本
+    public func sirenLatestVersionInstalled() {
         DLUpdater.shared.detectNewVersionBlock?(false, nil)
     }
 }

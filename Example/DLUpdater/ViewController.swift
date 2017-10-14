@@ -15,9 +15,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        DLUpdater.shared.checkUpdate(type: .immediately) { (shouldUpdate: Bool, error: NSError?) in
+        DLUpdater.shared.checkUpdate(type: .immediately) { (shouldUpdate: Bool, error: Error?) in
             // 
-            print(error?.description ?? "no error")
+            print(error?.localizedDescription ?? "no error")
         }
     }
 
