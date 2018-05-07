@@ -22,21 +22,22 @@ public enum CheckUpdateType: Int {
 
 public class DLUpdater: NSObject {
     
-    public typealias DetectNewVersionBlock = (_ shouldUpdate: Bool, _ error: Error?) -> Void
-
+    public typealias DetectNewVersionBlock = (_ shouldUpdate: Bool, _ error: Error?, _ lookupModel: SirenLookupModel?) -> Void
+    
     public static let shared = DLUpdater()
     
     private let siren = Siren.shared
-    private var didActiveApplicationObserved = false
+    private var appDidBecomeActiveObserved = false
+    private var appWillEnterForegroundObserved = false
     private var autoCheckType: CheckUpdateType = .weekly
-    fileprivate var shouldForcelyCheckUpdate = false
+    private var shouldForcelyCheckUpdate = false
     fileprivate var detectNewVersionBlock: DetectNewVersionBlock?
+    fileprivate var lookupModel: SirenLookupModel?
     
     private override init() {
         super.init()
-        
         #if DEBUG
-            siren.debugEnabled = true
+        siren.debugEnabled = true
         #endif
         
         siren.majorUpdateAlertType = .force
@@ -69,8 +70,8 @@ public class DLUpdater: NSObject {
         autoCheckType = type
         checkUpdate(type: type, block: block)
         
-        if !didActiveApplicationObserved {
-            didActiveApplicationObserved = true
+        if !appDidBecomeActiveObserved {
+            appDidBecomeActiveObserved = true
             NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateWhenDidBecomeActive) , name:NSNotification.Name.UIApplicationDidBecomeActive , object: nil)
         }
     }
@@ -90,25 +91,31 @@ public class DLUpdater: NSObject {
         }
     }
     
-}
-
-extension DLUpdater: SirenDelegate {
-    
     @objc private func checkUpdateImmediately() {
         Siren.shared.checkVersion(checkType: .immediately)
     }
     
-    // 弹出更新提示框
-    public func sirenDidShowUpdateDialog(alertType: Siren.AlertType) {
-        DLUpdater.shared.detectNewVersionBlock?(true, nil)
-        
-        if DLUpdater.shared.shouldForcelyCheckUpdate {
-            if alertType == .force {
+    private func forcelyCheckUpdate(alertType: Siren.AlertType) {
+        if shouldForcelyCheckUpdate {
+            if alertType == .force && !appWillEnterForegroundObserved {
+                appWillEnterForegroundObserved = true
                 NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateImmediately) , name:NSNotification.Name.UIApplicationWillEnterForeground , object: nil)
-            } else {
+            } else if appWillEnterForegroundObserved {
+                appWillEnterForegroundObserved = false
                 NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
             }
         }
+    }
+}
+
+extension DLUpdater: SirenDelegate {
+    
+    // 弹出更新提示框
+    public func sirenDidShowUpdateDialog(alertType: Siren.AlertType) {
+        self.detectNewVersionBlock?(true, nil, self.lookupModel)
+        self.lookupModel = nil
+        
+        self.forcelyCheckUpdate(alertType: alertType)
     }
     
     // 用户点击去 app store 更新
@@ -128,16 +135,23 @@ extension DLUpdater: SirenDelegate {
     
     // 检查更新失败(可能返回系统级别的错误)
     public func sirenDidFailVersionCheck(error: Error) {
-        DLUpdater.shared.detectNewVersionBlock?(false, error)
+        self.detectNewVersionBlock?(false, error, nil)
     }
     
     // 检测到更新但不弹出提示框
     public func sirenDidDetectNewVersionWithoutAlert(message: String, updateType: UpdateType) {
-        DLUpdater.shared.detectNewVersionBlock?(true, nil)
+        // FIXME: TODO with 'message'
+        self.detectNewVersionBlock?(true, nil, self.lookupModel)
+        self.lookupModel = nil
+    }
+    
+    // 返回版本更新检查信息对象
+    public func sirenNetworkCallDidReturnWithNewVersionInformation(lookupModel: SirenLookupModel) {
+        self.lookupModel = lookupModel
     }
     
     // 已安装最新版本
     public func sirenLatestVersionInstalled() {
-        DLUpdater.shared.detectNewVersionBlock?(false, nil)
+        self.detectNewVersionBlock?(false, nil, nil)
     }
 }
