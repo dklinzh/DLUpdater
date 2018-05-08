@@ -20,11 +20,33 @@ public enum CheckUpdateType: Int {
     case weekly = 7
 }
 
+public enum UpdateAlertType {
+    case `default`
+    case force
+}
+
 public class DLUpdater: NSObject {
     
     public typealias DetectNewVersionBlock = (_ shouldUpdate: Bool, _ error: Error?, _ lookupModel: SirenLookupModel?) -> Void
     
     public static let shared = DLUpdater()
+    
+    public var alertType: UpdateAlertType {
+        didSet {
+            switch alertType {
+            case .force:
+                siren.majorUpdateAlertType = .force
+                siren.minorUpdateAlertType = .force
+                siren.patchUpdateAlertType = .force
+                siren.revisionUpdateAlertType = .force
+            default:
+                siren.majorUpdateAlertType = .force
+                siren.minorUpdateAlertType = .option
+                siren.patchUpdateAlertType = .skip
+                siren.revisionUpdateAlertType = .none
+            }
+        }
+    }
     
     private let siren = Siren.shared
     private var appDidBecomeActiveObserved = false
@@ -35,15 +57,12 @@ public class DLUpdater: NSObject {
     fileprivate var lookupModel: SirenLookupModel?
     
     private override init() {
+        alertType = .default
         super.init()
+        
         #if DEBUG
         siren.debugEnabled = true
         #endif
-        
-        siren.majorUpdateAlertType = .force
-        siren.minorUpdateAlertType = .option
-        siren.patchUpdateAlertType = .skip
-        siren.revisionUpdateAlertType = .none
         
         siren.delegate = self
     }
