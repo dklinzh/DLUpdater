@@ -119,7 +119,7 @@ public class DLUpdater: NSObject {
             if alertType == .force && !appWillEnterForegroundObserved {
                 appWillEnterForegroundObserved = true
                 NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateImmediately) , name:NSNotification.Name.UIApplicationWillEnterForeground , object: nil)
-            } else if appWillEnterForegroundObserved {
+            } else if alertType != .force && appWillEnterForegroundObserved {
                 appWillEnterForegroundObserved = false
                 NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
             }
