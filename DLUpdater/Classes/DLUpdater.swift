@@ -23,6 +23,7 @@ public enum CheckUpdateType: Int {
 public enum UpdateAlertType {
     case `default`
     case force
+    case none
 }
 
 public class DLUpdater: NSObject {
@@ -35,10 +36,9 @@ public class DLUpdater: NSObject {
         didSet {
             switch alertType {
             case .force:
-                siren.majorUpdateAlertType = .force
-                siren.minorUpdateAlertType = .force
-                siren.patchUpdateAlertType = .force
-                siren.revisionUpdateAlertType = .force
+                siren.alertType = .force
+            case .none:
+                siren.alertType = .none
             default:
                 siren.majorUpdateAlertType = .force
                 siren.minorUpdateAlertType = .option

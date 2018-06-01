@@ -1,5 +1,5 @@
 PODS:
-  - DLUpdater (0.2.1):
+  - DLUpdater (0.2.2):
     - Siren (~> 3.4)
   - FBSnapshotTestCase (2.1.4):
     - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
@@ -28,7 +28,7 @@ DEPENDENCIES:
   - Quick
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - FBSnapshotTestCase
     - iOSSnapshotTestCase
     - Nimble
@@ -41,7 +41,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  DLUpdater: 4b324414ffdc58bde3c70f55a6b3edfcb752b600
+  DLUpdater: e38da1ff30c18028c2b45f9fc453410b610a1466
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   iOSSnapshotTestCase: 415bd84f9dbba4ff45fede49d800bc7332fbedac
   Nimble: 391f07782af4b37914f9bd7b2ffbb952731b8202
@@ -51,4 +51,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: c0b9dbc3b7cc1dfe0613a92586377feb18cc43f8
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.3
