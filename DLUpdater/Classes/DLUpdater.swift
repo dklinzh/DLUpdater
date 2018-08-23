@@ -128,8 +128,23 @@ public class DLUpdater: NSObject {
 }
 
 extension DLUpdater: SirenDelegate {
+
+    /// Siren performed a version check and did not display an alert.
+    public func sirenDidDetectNewVersionWithoutAlert(title: String, message: String, updateType: UpdateType) {
+        self.detectNewVersionBlock?(true, nil, self.lookupModel)
+        self.lookupModel = nil
+    }
     
-    // 弹出更新提示框
+    /// Siren failed to perform version check.
+    ///
+    /// - Note:
+    ///     Depending on the reason for failure,
+    ///     a system-level error may be returned.
+    public func sirenDidFailVersionCheck(error: Error) {
+        self.detectNewVersionBlock?(false, error, nil)
+    }
+    
+    /// User presented with an update dialog.
     public func sirenDidShowUpdateDialog(alertType: Siren.AlertType) {
         self.detectNewVersionBlock?(true, nil, self.lookupModel)
         self.lookupModel = nil
@@ -137,40 +152,30 @@ extension DLUpdater: SirenDelegate {
         self.forcelyCheckUpdate(alertType: alertType)
     }
     
-    // 用户点击去 app store 更新
-    public func sirenUserDidLaunchAppStore() {
-        
+    /// Siren performed a version check and the latest version was already installed.
+    public func sirenLatestVersionInstalled() {
+        self.detectNewVersionBlock?(false, nil, nil)
     }
     
-    // 用户点击跳过此次更新
-    public func sirenUserDidSkipVersion() {
-        
-    }
-    
-    // 用户点击取消更新
-    public func sirenUserDidCancel() {
-        
-    }
-    
-    // 检查更新失败(可能返回系统级别的错误)
-    public func sirenDidFailVersionCheck(error: Error) {
-        self.detectNewVersionBlock?(false, error, nil)
-    }
-    
-    // 检测到更新但不弹出提示框
-    public func sirenDidDetectNewVersionWithoutAlert(message: String, updateType: UpdateType) {
-        // FIXME: TODO with 'message'
-        self.detectNewVersionBlock?(true, nil, self.lookupModel)
-        self.lookupModel = nil
-    }
-    
-    // 返回版本更新检查信息对象
+    /// Provides the decoded JSON information from a successful version check call.
+    ///
+    /// - Parameter lookupModel: The `Decodable` model representing the JSON results from the iTunes Lookup API.
     public func sirenNetworkCallDidReturnWithNewVersionInformation(lookupModel: SirenLookupModel) {
         self.lookupModel = lookupModel
     }
     
-    // 已安装最新版本
-    public func sirenLatestVersionInstalled() {
-        self.detectNewVersionBlock?(false, nil, nil)
+    /// User did click on button that cancels update dialog.
+    public func sirenUserDidCancel() {
+        
+    }
+    
+    /// User did click on button that launched "App Store.app".
+    public func sirenUserDidLaunchAppStore() {
+        
+    }
+    
+    /// User did click on button that skips version update.
+    public func sirenUserDidSkipVersion() {
+        
     }
 }

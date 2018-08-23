@@ -1,6 +1,6 @@
 PODS:
-  - DLUpdater (0.2.2):
-    - Siren (~> 3.4)
+  - DLUpdater (0.2.3):
+    - Siren (= 3.4.3)
   - FBSnapshotTestCase (2.1.4):
     - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
   - FBSnapshotTestCase/Core (2.1.4)
@@ -11,14 +11,14 @@ PODS:
   - iOSSnapshotTestCase/Core (2.2.0)
   - iOSSnapshotTestCase/SwiftSupport (2.2.0):
     - iOSSnapshotTestCase/Core
-  - Nimble (7.1.1)
+  - Nimble (7.1.3)
   - Nimble-Snapshots (6.4.1):
     - Nimble-Snapshots/Core (= 6.4.1)
   - Nimble-Snapshots/Core (6.4.1):
     - iOSSnapshotTestCase (~> 2.0)
     - Nimble (~> 7.0)
-  - Quick (1.3.0)
-  - Siren (3.4.0)
+  - Quick (1.3.1)
+  - Siren (3.4.3)
 
 DEPENDENCIES:
   - DLUpdater (from `../`)
@@ -41,13 +41,13 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  DLUpdater: e38da1ff30c18028c2b45f9fc453410b610a1466
+  DLUpdater: 30f3937fb2b52f9dd9690f673a16db94091a8cf6
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   iOSSnapshotTestCase: 415bd84f9dbba4ff45fede49d800bc7332fbedac
-  Nimble: 391f07782af4b37914f9bd7b2ffbb952731b8202
+  Nimble: 2839b01d1b31f6a6a7777a221f0d91cf52e8e27b
   Nimble-Snapshots: 438fb1a6fa3c655e246fc9ac375f6cd2964d759a
-  Quick: 03278013f71aa05fe9ecabc94fbcc6835f1ee76f
-  Siren: 5b8be41b5cd05aa3528303325966e919bd53e412
+  Quick: d17304d58d0d169dd0bd1c6e5c28e3318de32a1a
+  Siren: e3cf1a93fa0fa73c03452107e95e5c10768d1d08
 
 PODFILE CHECKSUM: c0b9dbc3b7cc1dfe0613a92586377feb18cc43f8
 
