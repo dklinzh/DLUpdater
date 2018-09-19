@@ -68,8 +68,8 @@ public class DLUpdater: NSObject {
     }
     
     deinit {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     public func checkUpdate(type: CheckUpdateType = .immediately, block: DetectNewVersionBlock? = nil) {
@@ -91,7 +91,7 @@ public class DLUpdater: NSObject {
         
         if !appDidBecomeActiveObserved {
             appDidBecomeActiveObserved = true
-            NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateWhenDidBecomeActive) , name:NSNotification.Name.UIApplicationDidBecomeActive , object: nil)
+            NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateWhenDidBecomeActive) , name: UIApplication.didBecomeActiveNotification, object: nil)
         }
     }
     
@@ -118,10 +118,10 @@ public class DLUpdater: NSObject {
         if shouldForcelyCheckUpdate {
             if alertType == .force && !appWillEnterForegroundObserved {
                 appWillEnterForegroundObserved = true
-                NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateImmediately) , name:NSNotification.Name.UIApplicationWillEnterForeground , object: nil)
+                NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateImmediately) , name: UIApplication.willEnterForegroundNotification, object: nil)
             } else if alertType != .force && appWillEnterForegroundObserved {
                 appWillEnterForegroundObserved = false
-                NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+                NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
             }
         }
     }

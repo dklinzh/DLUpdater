@@ -20,7 +20,8 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/Daniel Lin/DLUpdater.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '8.0'
+  s.swift_version = '4.2'
 
   s.source_files = 'DLUpdater/Classes/**/*'
-  s.dependency 'Siren', '3.4.3'
+  s.dependency 'Siren', '3.5.1'
 end
