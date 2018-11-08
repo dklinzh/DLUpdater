@@ -1,6 +1,6 @@
 PODS:
   - DLUpdater (0.3.1):
-    - Siren (= 3.8.0)
+    - Siren (= 3.9.0)
   - FBSnapshotTestCase (2.1.4):
     - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
   - FBSnapshotTestCase/Core (2.1.4)
@@ -8,7 +8,7 @@ PODS:
     - FBSnapshotTestCase/Core
   - Nimble (7.3.1)
   - Quick (1.3.2)
-  - Siren (3.8.0)
+  - Siren (3.9.0)
 
 DEPENDENCIES:
   - DLUpdater (from `../`)
@@ -28,11 +28,11 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  DLUpdater: 41163a4b812978fc2682782f50e08e010bd3e34b
+  DLUpdater: 995a01091fe5559789316fc40260e82c7ee50f14
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   Nimble: 04f732da099ea4d153122aec8c2a88fd0c7219ae
   Quick: 2623cb30d7a7f41ca62f684f679586558f483d46
-  Siren: a815ad8d6ae7e62148ffc0b9859fd65d34890e3a
+  Siren: 989b4130fec05478b66c98b214ac5b4cce80f9e5
 
 PODFILE CHECKSUM: 599a1e668920e686f4bc73fe873cf633b871a305
 
