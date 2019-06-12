@@ -10,7 +10,7 @@ target 'DLUpdater_Example' do
         
         pod 'Quick'
         pod 'Nimble'
-        pod 'FBSnapshotTestCase'
+#        pod 'FBSnapshotTestCase'
 #        pod 'Nimble-Snapshots'
     end
 end

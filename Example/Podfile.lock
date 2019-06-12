@@ -1,24 +1,17 @@
 PODS:
-  - DLUpdater (0.3.1):
-    - Siren (= 3.9.0)
-  - FBSnapshotTestCase (2.1.4):
-    - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
-  - FBSnapshotTestCase/Core (2.1.4)
-  - FBSnapshotTestCase/SwiftSupport (2.1.4):
-    - FBSnapshotTestCase/Core
-  - Nimble (7.3.1)
-  - Quick (1.3.2)
-  - Siren (3.9.0)
+  - DLUpdater (0.4.0):
+    - Siren (= 5.1.0)
+  - Nimble (8.0.2)
+  - Quick (2.1.0)
+  - Siren (5.1.0)
 
 DEPENDENCIES:
   - DLUpdater (from `../`)
-  - FBSnapshotTestCase
   - Nimble
   - Quick
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
-    - FBSnapshotTestCase
     - Nimble
     - Quick
     - Siren
@@ -28,12 +21,11 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  DLUpdater: 995a01091fe5559789316fc40260e82c7ee50f14
-  FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
-  Nimble: 04f732da099ea4d153122aec8c2a88fd0c7219ae
-  Quick: 2623cb30d7a7f41ca62f684f679586558f483d46
-  Siren: 989b4130fec05478b66c98b214ac5b4cce80f9e5
+  DLUpdater: ede700485f993ce269c396da56ec9dd1b2ce92cd
+  Nimble: 622629381bda1dd5678162f21f1368cec7cbba60
+  Quick: 4be43f6634acfa727dd106bdf3929ce125ffa79d
+  Siren: 1dbdbd5dccd55865369a83f3d57c8eb818ac1556
 
-PODFILE CHECKSUM: 599a1e668920e686f4bc73fe873cf633b871a305
+PODFILE CHECKSUM: ddf824c9aab0a4b17f4c473b319a38aa608ff95b
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.7.1

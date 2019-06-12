@@ -8,20 +8,20 @@
 
 Pod::Spec.new do |s|
   s.name             = 'DLUpdater'
-  s.version          = '0.3.1'
-  s.summary          = 'A framework for update notification of iOS application.'
+  s.version          = '0.4.0'
+  s.summary          = 'An extension framework based on `Siren` for checking update of iOS app.'
   s.description      = <<-DESC
-                        A framework for update notification of iOS application. It is based on 'Siren'.
+                        An extension framework based on `Siren` for checking update of iOS app.
                        DESC
 
   s.homepage         = 'https://github.com/dklinzh/DLUpdater'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Daniel Lin' => 'linzhdk@gmail.com' }
-  s.source           = { :git => 'https://github.com/Daniel Lin/DLUpdater.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/dklinzh/DLUpdater.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '8.0'
-  s.swift_version = '4.2'
+  s.swift_version = '5.0'
 
   s.source_files = 'DLUpdater/Classes/**/*'
-  s.dependency 'Siren', '3.9.0'
+  s.dependency 'Siren', '5.1.0'
 end
