@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let updater = DLUpdater.shared
         updater.setRegionCode("CN")
         updater.majorRules = Rules(promptFrequency: .immediately, forAlertType: .skip)
-        updater.check(once: false, updateForced: true)
+        updater.check(persistent: true, updateForced: true)
         
         return true
     }

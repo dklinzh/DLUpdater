@@ -29,7 +29,7 @@ public extension RulesManager.UpdateType {
     var alertType: Rules.AlertType {
         switch self {
         case .major:
-            return .force
+            return .option
         case .minor:
             return .option
         case .patch:
@@ -134,12 +134,12 @@ public extension DLUpdater {
                                                        forceLanguageLocalization: forceLanguage)
     }
     
-    func check(once: Bool = true, updateForced: Bool = false, alertCustom: Bool = false, completion: ResultsHandler? = nil) {
+    func check(persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false, completion: ResultsHandler? = nil) {
         self.rulesManager = RulesManager(majorUpdateRules: self.majorRules ?? Rules.major(updateForced: updateForced, alertCustom: alertCustom),
                                          minorUpdateRules: self.minorRules ?? Rules.minor(updateForced: updateForced, alertCustom: alertCustom),
                                          patchUpdateRules: self.patchRules ?? Rules.patch(updateForced: updateForced, alertCustom: alertCustom),
                                          revisionUpdateRules: self.revisionRules ?? Rules.revision(updateForced: updateForced, alertCustom: alertCustom))
         
-        self.wail(performCheck: once ? .onDemand : .onForeground, completion: completion)
+        self.wail(performCheck: persistent ? .onForeground : .onDemand , completion: completion)
     }
 }
