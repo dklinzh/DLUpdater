@@ -8,6 +8,7 @@
 
 import UIKit
 import DLUpdater
+import Siren
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -18,8 +19,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-//        DLUpdater.shared.enableForcelyCheckUpdate()
-        DLUpdater.shared.autoCheckUpdate(type: .daily)
+        let updater = DLUpdater.shared
+        updater.setRegionCode("CN")
+        updater.majorRules = Rules(promptFrequency: .immediately, forAlertType: .skip)
+        updater.check(once: false, updateForced: true)
         
         return true
     }

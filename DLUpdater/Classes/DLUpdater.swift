@@ -9,173 +9,137 @@
 import UIKit
 import Siren
 
-public enum CheckUpdateType: Int {
-    /// Check application update immediately.
-    case immediately = 0
+public extension RulesManager.UpdateType {
     
-    /// Check application update once a day.
-    case daily = 1
-    
-    /// Check application update once a week.
-    case weekly = 7
-}
-
-public enum UpdateAlertType {
-    case `default`
-    case force
-    case none
-}
-
-public class DLUpdater: NSObject {
-    
-    public typealias DetectNewVersionBlock = (_ shouldUpdate: Bool, _ error: Error?, _ lookupModel: SirenLookupModel?) -> Void
-    
-    public static let shared = DLUpdater()
-    
-    public var alertType: UpdateAlertType {
-        didSet {
-            switch alertType {
-            case .force:
-                siren.alertType = .force
-            case .none:
-                siren.alertType = .none
-            default:
-                siren.majorUpdateAlertType = .force
-                siren.minorUpdateAlertType = .option
-                siren.patchUpdateAlertType = .skip
-                siren.revisionUpdateAlertType = .none
-            }
+    var frequency: Rules.UpdatePromptFrequency {
+        switch self {
+        case .major:
+            return .immediately
+        case .minor:
+            return .daily
+        case .patch:
+            return .weekly
+        case .revision:
+            return .weekly
+        case .unknown:
+            return .immediately
         }
     }
     
-    private let siren = Siren.shared
-    private var appDidBecomeActiveObserved = false
-    private var appWillEnterForegroundObserved = false
-    private var autoCheckType: CheckUpdateType = .weekly
-    private var shouldForcelyCheckUpdate = false
-    fileprivate var detectNewVersionBlock: DetectNewVersionBlock?
-    fileprivate var lookupModel: SirenLookupModel?
-    
-    private override init() {
-        alertType = .default
-        super.init()
-        
-        #if DEBUG
-        siren.debugEnabled = true
-        #endif
-        
-        siren.delegate = self
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
-    }
-    
-    public func checkUpdate(type: CheckUpdateType = .immediately, block: DetectNewVersionBlock? = nil) {
-        detectNewVersionBlock = block
-        
-        switch type {
-        case .immediately:
-            siren.checkVersion(checkType: .immediately)
-        case .daily:
-            siren.checkVersion(checkType: .daily)
-        case .weekly:
-            siren.checkVersion(checkType: .weekly)
-        }
-    }
-    
-    public func autoCheckUpdate(type: CheckUpdateType = .weekly, block: DetectNewVersionBlock? = nil) {
-        autoCheckType = type
-        checkUpdate(type: type, block: block)
-        
-        if !appDidBecomeActiveObserved {
-            appDidBecomeActiveObserved = true
-            NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateWhenDidBecomeActive) , name: UIApplication.didBecomeActiveNotification, object: nil)
-        }
-    }
-    
-    public func enableForcelyCheckUpdate() {
-        shouldForcelyCheckUpdate = true
-    }
-    
-    @objc private func checkUpdateWhenDidBecomeActive() {
-        switch autoCheckType {
-        case .immediately:
-            siren.checkVersion(checkType: .immediately)
-        case .daily:
-            siren.checkVersion(checkType: .daily)
-        case .weekly:
-            siren.checkVersion(checkType: .weekly)
-        }
-    }
-    
-    @objc private func checkUpdateImmediately() {
-        Siren.shared.checkVersion(checkType: .immediately)
-    }
-    
-    private func forcelyCheckUpdate(alertType: Siren.AlertType) {
-        if shouldForcelyCheckUpdate {
-            if alertType == .force && !appWillEnterForegroundObserved {
-                appWillEnterForegroundObserved = true
-                NotificationCenter.default.addObserver(self, selector:#selector(checkUpdateImmediately) , name: UIApplication.willEnterForegroundNotification, object: nil)
-            } else if alertType != .force && appWillEnterForegroundObserved {
-                appWillEnterForegroundObserved = false
-                NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
-            }
+    var alertType: Rules.AlertType {
+        switch self {
+        case .major:
+            return .force
+        case .minor:
+            return .option
+        case .patch:
+            return .option
+        case .revision:
+            return .skip
+        case .unknown:
+            return .none
         }
     }
 }
 
-extension DLUpdater: SirenDelegate {
+public extension Rules {
+    
+    static func updateType(_ updateType: RulesManager.UpdateType, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
+        let frequency: UpdatePromptFrequency = updateForced ? .immediately : updateType.frequency
+        let alertType: AlertType = alertCustom ? .none : (updateForced ? .force : updateType.alertType)
+        return Rules(promptFrequency: frequency, forAlertType: alertType)
+    }
+    
+    static func major(updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
+        return updateType(.major, updateForced: updateForced, alertCustom: alertCustom)
+    }
+    
+    static func minor(updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
+        return updateType(.minor, updateForced: updateForced, alertCustom: alertCustom)
+    }
+    
+    static func patch(updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
+        return updateType(.patch, updateForced: updateForced, alertCustom: alertCustom)
+    }
+    
+    static func revision(updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
+        return updateType(.revision, updateForced: updateForced, alertCustom: alertCustom)
+    }
+}
 
-    /// Siren performed a version check and did not display an alert.
-    public func sirenDidDetectNewVersionWithoutAlert(title: String, message: String, updateType: UpdateType) {
-        self.detectNewVersionBlock?(true, nil, self.lookupModel)
-        self.lookupModel = nil
+public typealias DLUpdater = Siren
+
+private var _majorRulesKey: Int = 0
+private var _minorRulesKey: Int = 0
+private var _patchRulesKey: Int = 0
+private var _revisionRulesKey: Int = 0
+
+public extension DLUpdater {
+    
+    var majorRules: Rules? {
+        get {
+            return objc_getAssociatedObject(self, &_majorRulesKey) as? Rules
+        }
+        set {
+            objc_setAssociatedObject(self, &_majorRulesKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
     }
     
-    /// Siren failed to perform version check.
-    ///
-    /// - Note:
-    ///     Depending on the reason for failure,
-    ///     a system-level error may be returned.
-    public func sirenDidFailVersionCheck(error: Error) {
-        self.detectNewVersionBlock?(false, error, nil)
+    var minorRules: Rules? {
+        get {
+            return objc_getAssociatedObject(self, &_minorRulesKey) as? Rules
+        }
+        set {
+            objc_setAssociatedObject(self, &_minorRulesKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+
+    var patchRules: Rules? {
+        get {
+            return objc_getAssociatedObject(self, &_patchRulesKey) as? Rules
+        }
+        set {
+            objc_setAssociatedObject(self, &_patchRulesKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+
+    var revisionRules: Rules? {
+        get {
+            return objc_getAssociatedObject(self, &_revisionRulesKey) as? Rules
+        }
+        set {
+            objc_setAssociatedObject(self, &_revisionRulesKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
     }
     
-    /// User presented with an update dialog.
-    public func sirenDidShowUpdateDialog(alertType: Siren.AlertType) {
-        self.detectNewVersionBlock?(true, nil, self.lookupModel)
-        self.lookupModel = nil
+    func setRegionCode(_ code: String) {
+        self.apiManager = APIManager(countryCode: code)
+    }
+    
+    func setPresentation(alertTintColor tintColor: UIColor? = nil,
+                         appName: String? = nil,
+                         alertTitle: String  = AlertConstants.alertTitle,
+                         alertMessage: String  = AlertConstants.alertMessage,
+                         updateButtonTitle: String  = AlertConstants.updateButtonTitle,
+                         nextTimeButtonTitle: String  = AlertConstants.nextTimeButtonTitle,
+                         skipButtonTitle: String  = AlertConstants.skipButtonTitle,
+                         forceLanguageLocalization forceLanguage: Localization.Language? = nil) {
+        self.presentationManager = PresentationManager(alertTintColor: tintColor,
+                                                       appName: appName,
+                                                       alertTitle: alertTitle,
+                                                       alertMessage: alertMessage,
+                                                       updateButtonTitle: updateButtonTitle,
+                                                       nextTimeButtonTitle: nextTimeButtonTitle,
+                                                       skipButtonTitle: skipButtonTitle,
+                                                       forceLanguageLocalization: forceLanguage)
+    }
+    
+    func check(once: Bool = true, updateForced: Bool = false, alertCustom: Bool = false, completion: ResultsHandler? = nil) {
+        self.rulesManager = RulesManager(majorUpdateRules: self.majorRules ?? Rules.major(updateForced: updateForced, alertCustom: alertCustom),
+                                         minorUpdateRules: self.minorRules ?? Rules.minor(updateForced: updateForced, alertCustom: alertCustom),
+                                         patchUpdateRules: self.patchRules ?? Rules.patch(updateForced: updateForced, alertCustom: alertCustom),
+                                         revisionUpdateRules: self.revisionRules ?? Rules.revision(updateForced: updateForced, alertCustom: alertCustom))
         
-        self.forcelyCheckUpdate(alertType: alertType)
-    }
-    
-    /// Siren performed a version check and the latest version was already installed.
-    public func sirenLatestVersionInstalled() {
-        self.detectNewVersionBlock?(false, nil, nil)
-    }
-    
-    /// Provides the decoded JSON information from a successful version check call.
-    ///
-    /// - Parameter lookupModel: The `Decodable` model representing the JSON results from the iTunes Lookup API.
-    public func sirenNetworkCallDidReturnWithNewVersionInformation(lookupModel: SirenLookupModel) {
-        self.lookupModel = lookupModel
-    }
-    
-    /// User did click on button that cancels update dialog.
-    public func sirenUserDidCancel() {
-        
-    }
-    
-    /// User did click on button that launched "App Store.app".
-    public func sirenUserDidLaunchAppStore() {
-        
-    }
-    
-    /// User did click on button that skips version update.
-    public func sirenUserDidSkipVersion() {
-        
+        self.wail(performCheck: once ? .onDemand : .onForeground, completion: completion)
     }
 }
