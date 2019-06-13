@@ -44,26 +44,26 @@ public extension RulesManager.UpdateType {
 
 public extension Rules {
     
-    static func updateType(_ updateType: RulesManager.UpdateType, persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
+    private static func _updateType(_ updateType: RulesManager.UpdateType, persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
         let frequency: UpdatePromptFrequency = (!persistent || updateForced) ? .immediately : updateType.frequency
         let alertType: AlertType = alertCustom ? .none : (updateForced ? .force : updateType.alertType)
         return Rules(promptFrequency: frequency, forAlertType: alertType)
     }
     
     static func major(persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
-        return updateType(.major, persistent: persistent, updateForced: updateForced, alertCustom: alertCustom)
+        return _updateType(.major, persistent: persistent, updateForced: updateForced, alertCustom: alertCustom)
     }
     
     static func minor(persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
-        return updateType(.minor, persistent: persistent, updateForced: updateForced, alertCustom: alertCustom)
+        return _updateType(.minor, persistent: persistent, updateForced: updateForced, alertCustom: alertCustom)
     }
     
     static func patch(persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
-        return updateType(.patch, persistent: persistent, updateForced: updateForced, alertCustom: alertCustom)
+        return _updateType(.patch, persistent: persistent, updateForced: updateForced, alertCustom: alertCustom)
     }
     
     static func revision(persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
-        return updateType(.revision, persistent: persistent, updateForced: updateForced, alertCustom: alertCustom)
+        return _updateType(.revision, persistent: persistent, updateForced: updateForced, alertCustom: alertCustom)
     }
 }
 
