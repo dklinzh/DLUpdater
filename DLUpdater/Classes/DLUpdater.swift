@@ -44,26 +44,26 @@ public extension RulesManager.UpdateType {
 
 public extension Rules {
     
-    static func updateType(_ updateType: RulesManager.UpdateType, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
-        let frequency: UpdatePromptFrequency = updateForced ? .immediately : updateType.frequency
+    static func updateType(_ updateType: RulesManager.UpdateType, persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
+        let frequency: UpdatePromptFrequency = (!persistent || updateForced) ? .immediately : updateType.frequency
         let alertType: AlertType = alertCustom ? .none : (updateForced ? .force : updateType.alertType)
         return Rules(promptFrequency: frequency, forAlertType: alertType)
     }
     
-    static func major(updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
-        return updateType(.major, updateForced: updateForced, alertCustom: alertCustom)
+    static func major(persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
+        return updateType(.major, persistent: persistent, updateForced: updateForced, alertCustom: alertCustom)
     }
     
-    static func minor(updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
-        return updateType(.minor, updateForced: updateForced, alertCustom: alertCustom)
+    static func minor(persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
+        return updateType(.minor, persistent: persistent, updateForced: updateForced, alertCustom: alertCustom)
     }
     
-    static func patch(updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
-        return updateType(.patch, updateForced: updateForced, alertCustom: alertCustom)
+    static func patch(persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
+        return updateType(.patch, persistent: persistent, updateForced: updateForced, alertCustom: alertCustom)
     }
     
-    static func revision(updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
-        return updateType(.revision, updateForced: updateForced, alertCustom: alertCustom)
+    static func revision(persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false) -> Rules {
+        return updateType(.revision, persistent: persistent, updateForced: updateForced, alertCustom: alertCustom)
     }
 }
 
@@ -135,10 +135,18 @@ public extension DLUpdater {
     }
     
     func check(persistent: Bool = false, updateForced: Bool = false, alertCustom: Bool = false, completion: ResultsHandler? = nil) {
-        self.rulesManager = RulesManager(majorUpdateRules: self.majorRules ?? Rules.major(updateForced: updateForced, alertCustom: alertCustom),
-                                         minorUpdateRules: self.minorRules ?? Rules.minor(updateForced: updateForced, alertCustom: alertCustom),
-                                         patchUpdateRules: self.patchRules ?? Rules.patch(updateForced: updateForced, alertCustom: alertCustom),
-                                         revisionUpdateRules: self.revisionRules ?? Rules.revision(updateForced: updateForced, alertCustom: alertCustom))
+        self.rulesManager = RulesManager(majorUpdateRules: self.majorRules ?? Rules.major(persistent: persistent,
+                                                                                          updateForced: updateForced,
+                                                                                          alertCustom: alertCustom),
+                                         minorUpdateRules: self.minorRules ?? Rules.minor(persistent: persistent,
+                                                                                          updateForced: updateForced,
+                                                                                          alertCustom: alertCustom),
+                                         patchUpdateRules: self.patchRules ?? Rules.patch(persistent: persistent,
+                                                                                          updateForced: updateForced,
+                                                                                          alertCustom: alertCustom),
+                                         revisionUpdateRules: self.revisionRules ?? Rules.revision(persistent: persistent,
+                                                                                                   updateForced: updateForced,
+                                                                                                   alertCustom: alertCustom))
         
         self.wail(performCheck: persistent ? .onForeground : .onDemand , completion: completion)
     }
