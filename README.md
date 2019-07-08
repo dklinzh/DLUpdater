@@ -19,7 +19,7 @@ DLUpdater is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'DLUpdater', :git => 'https://github.com/dklinzh/DLUpdater.git'
+pod 'DLUpdater', '~> 0.4'
 ```
 
 ## Author
