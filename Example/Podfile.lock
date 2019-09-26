@@ -1,5 +1,5 @@
 PODS:
-  - DLUpdater (0.4.1):
+  - DLUpdater (0.5.0):
     - Siren (= 5.2.1)
   - Nimble (8.0.4)
   - Quick (2.2.0)
@@ -21,7 +21,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  DLUpdater: 9b4281bb4648da76378364401c15682f5721655a
+  DLUpdater: 9aac17ca85ca1be017f30fad4e8c4a4f3d5fd21b
   Nimble: 18d5360282923225d62b09d781f63abc1a0111fc
   Quick: 7fb19e13be07b5dfb3b90d4f9824c855a11af40e
   Siren: 8a22581dcf49ff12752531c471761c15b2c7e272
