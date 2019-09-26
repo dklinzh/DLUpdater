@@ -1,9 +1,9 @@
 PODS:
-  - DLUpdater (0.4.0):
-    - Siren (= 5.1.0)
-  - Nimble (8.0.2)
-  - Quick (2.1.0)
-  - Siren (5.1.0)
+  - DLUpdater (0.4.1):
+    - Siren (= 5.2.1)
+  - Nimble (8.0.4)
+  - Quick (2.2.0)
+  - Siren (5.2.1)
 
 DEPENDENCIES:
   - DLUpdater (from `../`)
@@ -11,7 +11,7 @@ DEPENDENCIES:
   - Quick
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - Nimble
     - Quick
     - Siren
@@ -21,11 +21,11 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  DLUpdater: ede700485f993ce269c396da56ec9dd1b2ce92cd
-  Nimble: 622629381bda1dd5678162f21f1368cec7cbba60
-  Quick: 4be43f6634acfa727dd106bdf3929ce125ffa79d
-  Siren: 1dbdbd5dccd55865369a83f3d57c8eb818ac1556
+  DLUpdater: 9b4281bb4648da76378364401c15682f5721655a
+  Nimble: 18d5360282923225d62b09d781f63abc1a0111fc
+  Quick: 7fb19e13be07b5dfb3b90d4f9824c855a11af40e
+  Siren: 8a22581dcf49ff12752531c471761c15b2c7e272
 
-PODFILE CHECKSUM: ddf824c9aab0a4b17f4c473b319a38aa608ff95b
+PODFILE CHECKSUM: 8a71c6d422aa08e8d1b40f7dd125a66a12b79123
 
-COCOAPODS: 1.7.3
+COCOAPODS: 1.8.0

@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'DLUpdater'
-  s.version          = '0.4.0'
+  s.version          = '0.4.1'
   s.summary          = 'An extension framework based on `Siren` for checking update of iOS app.'
   s.description      = <<-DESC
                         An extension framework based on `Siren` for checking update of iOS app.
@@ -23,5 +23,5 @@ Pod::Spec.new do |s|
   s.swift_version = '5.0'
 
   s.source_files = 'DLUpdater/Classes/**/*'
-  s.dependency 'Siren', '5.1.0'
+  s.dependency 'Siren', '5.2.1'
 end
