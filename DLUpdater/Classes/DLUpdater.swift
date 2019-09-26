@@ -146,6 +146,14 @@ public extension DLUpdater {
         }
     }
 
+    /// Initialization of updater object with the specified region code.
+    /// - Parameter regionCode: The region or country code for the App Store in which the app is availabe.
+    convenience init(regionCode: String) {
+        self.init()
+
+        self.setRegionCode(regionCode)
+    }
+
     /// Set the region or country of an App Store in which the app is available. By default, all version check requests are performed against the US App Store. If the app is not available in the US App Store, set it to the identifier of at least one App Store region within which it is available.
     ///
     /// - Parameter code: The region or country code for the App Store in which the app is availabe.
